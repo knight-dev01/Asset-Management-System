@@ -5,7 +5,7 @@ namespace AssetManagement.Api.Services;
 
 public interface IAssetRepository
 {
-    IEnumerable<Asset> GetAll(string createdBy);
+    IEnumerable<Asset> GetAll(string createdBy, string? search = null, string? status = null, string? category = null);
     Asset? GetById(string id, string createdBy);
     Asset Create(Asset asset);
     Asset Update(string id, Asset asset, string createdBy);
@@ -16,9 +16,29 @@ public class InMemoryAssetRepository : IAssetRepository
 {
     private static readonly ConcurrentDictionary<string, Asset> Assets = new();
 
-    public IEnumerable<Asset> GetAll(string createdBy)
+    public IEnumerable<Asset> GetAll(string createdBy, string? search = null, string? status = null, string? category = null)
     {
-        return Assets.Values.Where(a => a.CreatedBy == createdBy).OrderByDescending(a => a.CreatedAt);
+        var query = Assets.Values.Where(a => a.CreatedBy == createdBy);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var searchLower = search.Trim().ToLowerInvariant();
+            query = query.Where(a =>
+                a.AssetCode.ToLowerInvariant().Contains(searchLower) ||
+                a.AssetName.ToLowerInvariant().Contains(searchLower));
+        }
+
+        if (!string.IsNullOrWhiteSpace(status))
+        {
+            query = query.Where(a => string.Equals(a.Status, status.Trim(), StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(category))
+        {
+            query = query.Where(a => string.Equals(a.Category, category.Trim(), StringComparison.OrdinalIgnoreCase));
+        }
+
+        return query.OrderByDescending(a => a.CreatedAt);
     }
 
     public Asset? GetById(string id, string createdBy)

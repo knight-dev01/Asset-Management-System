@@ -16,7 +16,29 @@ public class AssetsController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll([FromQuery] string createdBy)
+    public IActionResult GetAll([FromQuery] string createdBy, [FromQuery] string? search = null, [FromQuery] string? status = null, [FromQuery] string? category = null)
+    {
+        if (string.IsNullOrWhiteSpace(createdBy))
+        {
+            return BadRequest(new { error = "createdBy query parameter is required." });
+        }
+
+        var assets = _repository.GetAll(createdBy, search, status, category);
+        return Ok(assets);
+    }
+
+    [HttpGet("{id}")]
+    public IActionResult GetById(string id, [FromQuery] string createdBy)
+    {
+        if (string.IsNullOrWhiteSpace(createdBy)) return BadRequest(new { error = "createdBy query parameter is required." });
+
+        var asset = _repository.GetById(id, createdBy);
+        if (asset == null) return NotFound();
+        return Ok(asset);
+    }
+
+    [HttpGet("summary")]
+    public IActionResult Summary([FromQuery] string createdBy)
     {
         if (string.IsNullOrWhiteSpace(createdBy))
         {
@@ -24,15 +46,16 @@ public class AssetsController : ControllerBase
         }
 
         var assets = _repository.GetAll(createdBy);
-        return Ok(assets);
-    }
+        var totalAssets = assets.Count();
+        var totalCategories = assets.Select(a => a.Category).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+        var recentAssets = assets.OrderByDescending(a => a.CreatedAt).Take(5);
 
-    [HttpGet("{id}")]
-    public IActionResult GetById(string id, [FromQuery] string createdBy)
-    {
-        var asset = _repository.GetById(id, createdBy);
-        if (asset == null) return NotFound();
-        return Ok(asset);
+        return Ok(new
+        {
+            totalAssets,
+            totalCategories,
+            recentAssets
+        });
     }
 
     [HttpPost]
