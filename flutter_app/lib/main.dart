@@ -220,28 +220,59 @@ class _AssetManagementAppState extends State<AssetManagementApp> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (_error != null) ...[
-                      Text(_error!, style: const TextStyle(color: Colors.redAccent)),
-                      const SizedBox(height: 12),
+                      Card(
+                        color: Colors.red.shade50,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.error_outline, color: Colors.redAccent),
+                              const SizedBox(width: 12),
+                              Expanded(child: Text(_error!, style: const TextStyle(color: Colors.redAccent))),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
                     ],
                     Row(
                       children: [
                         Expanded(
                           child: TextField(
-                            decoration: const InputDecoration(labelText: 'Search by code or name'),
+                            decoration: const InputDecoration(
+                              labelText: 'Search assets',
+                              prefixIcon: Icon(Icons.search),
+                            ),
                             onChanged: (value) {
                               _search = value;
                             },
                             onSubmitted: (_) => _refreshData(),
                           ),
                         ),
-                        const SizedBox(width: 16),
-                        IconButton(
-                          icon: const Icon(Icons.search),
+                        const SizedBox(width: 12),
+                        ElevatedButton.icon(
                           onPressed: _refreshData,
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Refresh'),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
+                    Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                        child: Row(
+                          children: [
+                            Expanded(child: _buildSummaryTile('Total assets', _summary?.totalAssets.toString() ?? '0', Icons.inventory_2_outlined)),
+                            Expanded(child: _buildSummaryTile('Categories', _summary?.totalCategories.toString() ?? '0', Icons.category_outlined)),
+                            Expanded(child: _buildSummaryTile('Recent', _summary?.recentAssets.length.toString() ?? '0', Icons.schedule_outlined)),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     Row(
                       children: [
                         Expanded(
@@ -252,7 +283,7 @@ class _AssetManagementAppState extends State<AssetManagementApp> {
                             },
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: TextField(
                             decoration: const InputDecoration(labelText: 'Status filter'),
@@ -261,17 +292,20 @@ class _AssetManagementAppState extends State<AssetManagementApp> {
                             },
                           ),
                         ),
+                        const SizedBox(width: 12),
+                        ElevatedButton.icon(
+                          onPressed: () => _refreshData(),
+                          icon: const Icon(Icons.filter_list),
+                          label: const Text('Apply'),
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        ElevatedButton(
-                          onPressed: _refreshData,
-                          child: const Text('Refresh'),
-                        ),
-                        const SizedBox(width: 16),
-                        ElevatedButton(
+                        Text('Assets', style: Theme.of(context).textTheme.titleLarge),
+                        ElevatedButton.icon(
                           onPressed: () async {
                             final asset = await Navigator.of(context).push<Asset?>(
                               MaterialPageRoute(
@@ -282,14 +316,13 @@ class _AssetManagementAppState extends State<AssetManagementApp> {
                               await _saveAsset(asset);
                             }
                           },
-                          child: const Text('New Asset'),
+                          icon: const Icon(Icons.add),
+                          label: const Text('New Asset'),
                         ),
                       ],
                     ),
                     const SizedBox(height: 12),
                     if (_loading) const LinearProgressIndicator(),
-                    if (_summary != null) _buildSummaryCard(_summary!),
-                    const SizedBox(height: 12),
                     Expanded(child: _buildAssetList()),
                   ],
                 ),
@@ -298,18 +331,16 @@ class _AssetManagementAppState extends State<AssetManagementApp> {
     );
   }
 
-  Widget _buildSummaryCard(AssetSummary summary) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Expanded(child: Text('Total assets: ${summary.totalAssets}')),
-            Expanded(child: Text('Categories: ${summary.totalCategories}')),
-            Expanded(child: Text('Recent: ${summary.recentAssets.length}')),
-          ],
-        ),
-      ),
+  Widget _buildSummaryTile(String title, String value, IconData icon) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: Colors.indigo.shade700),
+        const SizedBox(height: 8),
+        Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 4),
+        Text(title, style: TextStyle(color: Colors.grey.shade700)),
+      ],
     );
   }
 

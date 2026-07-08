@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'models.dart';
 
-const _baseUrl = String.fromEnvironment('ASSET_API_URL', defaultValue: 'http://localhost:5200/api');
+const _baseUrl = String.fromEnvironment('ASSET_API_URL', defaultValue: 'http://localhost:5238/api');
 
 class ApiService {
   static Future<AuthResponse> login(String email, String password) async {
