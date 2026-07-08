@@ -47,3 +47,11 @@ jobs:
         with:
           name: flutter-web-build
           path: flutter_app/build/web
+
+      - name: Upload Flutter web Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: flutter_app/build/web
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
