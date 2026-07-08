@@ -1,0 +1,127 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Represents an authenticated user within the system",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The user's email address"
+        },
+        "passwordHash": {
+          "type": "string",
+          "description": "SHA-256 hashed password with a salt for local login"
+        },
+        "name": {
+          "type": "string",
+          "description": "The user's display name"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of user creation"
+        }
+      },
+      "required": ["email", "passwordHash", "name", "createdAt"]
+    },
+    "Asset": {
+      "title": "Asset",
+      "description": "Represents a physical or digital company asset",
+      "type": "object",
+      "properties": {
+        "assetCode": {
+          "type": "string",
+          "description": "Unique auto-generated identifier code for the asset"
+        },
+        "assetName": {
+          "type": "string",
+          "description": "The name or short label of the asset"
+        },
+        "category": {
+          "type": "string",
+          "description": "Category group of the asset (e.g. IT Equipment, Furniture, Vehicles)"
+        },
+        "brand": {
+          "type": "string",
+          "description": "Brand of the manufacturer"
+        },
+        "model": {
+          "type": "string",
+          "description": "Model identification"
+        },
+        "serialNumber": {
+          "type": "string",
+          "description": "Manufacturer's unique serial number"
+        },
+        "purchaseDate": {
+          "type": "string",
+          "format": "date",
+          "description": "The date when the asset was purchased"
+        },
+        "purchaseCost": {
+          "type": "number",
+          "description": "Monetary cost of purchasing the asset"
+        },
+        "department": {
+          "type": "string",
+          "description": "The organizational department using or managing the asset"
+        },
+        "location": {
+          "type": "string",
+          "description": "Physical building, office room, or virtual location of the asset"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Active", "Maintenance", "Retired"],
+          "description": "Current lifecycle status of the asset"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed notes or descriptions of the asset"
+        },
+        "createdBy": {
+          "type": "string",
+          "description": "The email or uid of the user who registered this asset"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Date and time when the asset was registered"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Date and time when the asset was last updated"
+        }
+      },
+      "required": [
+        "assetCode",
+        "assetName",
+        "category",
+        "brand",
+        "model",
+        "serialNumber",
+        "purchaseDate",
+        "purchaseCost",
+        "department",
+        "location",
+        "status",
+        "createdBy",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Secure storage of registered user accounts with local salted credentials"
+    },
+    "/assets/{assetId}": {
+      "schema": { "$ref": "#/entities/Asset" },
+      "description": "List of tracked assets with full details, timestamps, and barcodes"
+    }
+  }
+}

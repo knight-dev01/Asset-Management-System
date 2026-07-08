@@ -1,0 +1,6 @@
+{
+  "name": "Asset Management System",
+  "description": "An elegant corporate Asset Management System featuring auto-generated barcodes, live telemetry, search filters, and secure dual-mode authentication.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

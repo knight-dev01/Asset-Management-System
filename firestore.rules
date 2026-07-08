@@ -1,0 +1,119 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Global Safety Net - Default Deny Catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Hardened Global Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // 2. Validation Blueprints (Anti-Update-Gap)
+    function isValidUser(data) {
+      return data.keys().hasAll(['email', 'name', 'createdAt'])
+        && data.keys().size() == 3
+        && data.email is string && data.email.size() <= 128
+        && data.name is string && data.name.size() <= 128
+        && data.createdAt == request.time;
+    }
+
+    function isValidAsset(data) {
+      return data.keys().hasAll([
+        'assetCode', 'assetName', 'category', 'brand', 'model', 
+        'serialNumber', 'purchaseDate', 'purchaseCost', 'department', 
+        'location', 'status', 'description', 'createdBy', 'createdAt', 'updatedAt'
+      ])
+        && data.keys().size() == 15
+        && data.assetCode is string && data.assetCode.size() > 0 && data.assetCode.size() <= 64
+        && data.assetName is string && data.assetName.size() > 0 && data.assetName.size() <= 128
+        && data.category is string && data.category.size() <= 100
+        && data.brand is string && data.brand.size() <= 100
+        && data.model is string && data.model.size() <= 100
+        && data.serialNumber is string && data.serialNumber.size() <= 100
+        && data.purchaseDate is string && data.purchaseDate.size() <= 20
+        && data.purchaseCost is number && data.purchaseCost >= 0
+        && data.department is string && data.department.size() <= 100
+        && data.location is string && data.location.size() <= 100
+        && data.status is string && data.status in ['Active', 'Maintenance', 'Retired']
+        && data.description is string && data.description.size() <= 1000
+        && data.createdBy is string && data.createdBy.size() <= 128
+        && data.createdAt == request.time
+        && data.updatedAt == request.time;
+    }
+
+    function isValidAssetUpdate(data) {
+      return data.keys().hasAll([
+        'assetCode', 'assetName', 'category', 'brand', 'model', 
+        'serialNumber', 'purchaseDate', 'purchaseCost', 'department', 
+        'location', 'status', 'description', 'createdBy', 'createdAt', 'updatedAt'
+      ])
+        && data.keys().size() == 15
+        && data.assetCode is string && data.assetCode.size() > 0 && data.assetCode.size() <= 64
+        && data.assetName is string && data.assetName.size() > 0 && data.assetName.size() <= 128
+        && data.category is string && data.category.size() <= 100
+        && data.brand is string && data.brand.size() <= 100
+        && data.model is string && data.model.size() <= 100
+        && data.serialNumber is string && data.serialNumber.size() <= 100
+        && data.purchaseDate is string && data.purchaseDate.size() <= 20
+        && data.purchaseCost is number && data.purchaseCost >= 0
+        && data.department is string && data.department.size() <= 100
+        && data.location is string && data.location.size() <= 100
+        && data.status is string && data.status in ['Active', 'Maintenance', 'Retired']
+        && data.description is string && data.description.size() <= 1000
+        && data.createdBy is string && data.createdBy.size() <= 128
+        && data.createdAt == existing().createdAt
+        && data.updatedAt == request.time;
+    }
+
+    // Rules for Users
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if false; // Block user profile scraping
+      allow create: if isOwner(userId) && isValidUser(incoming());
+      allow update: if isOwner(userId) && isValidUser(incoming()) && incoming().createdAt == existing().createdAt;
+      allow delete: if false; // Profile deletion disabled
+    }
+
+    // Rules for Assets
+    match /assets/{assetId} {
+      // Authenticated users can list/get assets
+      allow get, list: if isSignedIn();
+      
+      // Creating assets - creator must be verified as the logged-in user
+      allow create: if isSignedIn() 
+        && isValidId(assetId)
+        && isValidAsset(incoming()) 
+        && incoming().createdBy == request.auth.uid;
+
+      // Updating assets - only authenticated users can update assets
+      allow update: if isSignedIn() 
+        && isValidId(assetId)
+        && isValidAssetUpdate(incoming())
+        && incoming().assetCode == existing().assetCode
+        && incoming().createdBy == existing().createdBy;
+
+      // Deleting assets
+      allow delete: if isSignedIn();
+    }
+  }
+}
