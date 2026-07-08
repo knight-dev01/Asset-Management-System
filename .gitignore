@@ -6,3 +6,17 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Flutter
+flutter_app/.dart_tool/
+flutter_app/build/
+flutter_app/.packages
+flutter_app/.flutter-plugins
+flutter_app/.flutter-plugins-deps
+flutter_app/.metadata
+flutter_app/.idea/
+flutter_app/*.iml
+
+# .NET
+backend/AssetManagement.Api/bin/
+backend/AssetManagement.Api/obj/

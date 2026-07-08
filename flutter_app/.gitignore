@@ -1,0 +1,28 @@
+# Flutter/Dart
+.dart_tool/
+.build/
+.packages
+.pub-cache/
+.flutter-plugins
+.flutter-plugins-deps
+.flutter-plugins-deps
+/generated_plugin_registrant.dart
+
+# build outputs
+/build/
+/ios/Pods/
+/ios/Runner.xcworkspace/
+/ios/Flutter/Flutter.framework
+/ios/Flutter/Flutter.podspec
+/ios/.symlinks/
+/ios/Flutter/engine/
+/ios/Flutter/Flutter.xcframework
+
+# IntelliJ / VS Code
+.idea/
+.vscode/
+
+# Misc
+*.log
+*.tmp
+pubspec.lock
