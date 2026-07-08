@@ -2,10 +2,9 @@ services:
   - type: web
     name: asset-api
     runtime: docker
-    dockerfilePath: backend/AssetManagement.Api/Dockerfile
+    rootDir: backend/AssetManagement.Api
     region: oregon
     plan: free
-    healthCheckPath: /api/auth/login
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production

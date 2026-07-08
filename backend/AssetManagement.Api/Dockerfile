@@ -2,10 +2,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-COPY backend/AssetManagement.Api/AssetManagement.Api.csproj ./
+COPY . .
 RUN dotnet restore "AssetManagement.Api.csproj"
-
-COPY backend/AssetManagement.Api/ .
 RUN dotnet build "AssetManagement.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish
