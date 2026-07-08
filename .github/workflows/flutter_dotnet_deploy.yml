@@ -36,7 +36,7 @@ jobs:
       - name: Build Flutter web
         run: |
           cd flutter_app
-          flutter build web --release
+          flutter build web --release --base-href /Asset-Management-System/
 
       - name: Build .NET backend
         run: |
