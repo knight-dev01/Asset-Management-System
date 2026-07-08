@@ -18,7 +18,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Set up Flutter
-        uses: actions/setup-flutter@v3
+        uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.44.5'
 
