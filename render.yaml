@@ -2,7 +2,6 @@ services:
   - type: web
     name: asset-api
     runtime: docker
-    rootDir: backend/AssetManagement.Api
     region: oregon
     plan: free
     envVars:
