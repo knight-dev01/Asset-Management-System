@@ -29,6 +29,8 @@ dotnet build
 
 This repo is prepared for GitHub Pages web deployment from the Flutter web build output.
 
+> Workflow fix committed and workflow retry pending.
+
 ## Notes
 
 - The repository is now focused on Flutter and C#/.NET.
