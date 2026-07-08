@@ -1,0 +1,21 @@
+# Directories to ignore
+**/bin/
+**/obj/
+**/out/
+**/.git/
+**/.vs/
+**/.vscode/
+**/.idea/
+**/build/
+**/.dart_tool/
+**/.flutter-plugins*
+**/node_modules/
+
+# Files to ignore
+Dockerfile
+docker-compose.yml
+.dockerignore
+README.md
+DEMO.md
+CONTRIBUTING.md
+security_spec.md
