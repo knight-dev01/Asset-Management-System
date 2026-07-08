@@ -36,7 +36,7 @@ jobs:
       - name: Build Flutter web
         run: |
           cd flutter_app
-          flutter build web --release --base-href /Asset-Management-System/
+          flutter build web --release --base-href /Asset-Management-System/ --dart-define=ASSET_API_URL=https://asset-management-system-api.onrender.com/api
 
       - name: Build .NET backend
         run: |
