@@ -7,6 +7,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddSingleton<AssetManagement.Api.Services.IAssetRepository, AssetManagement.Api.Services.InMemoryAssetRepository>();
 builder.Services.AddSingleton<AssetManagement.Api.Services.IUserRepository, AssetManagement.Api.Services.InMemoryUserRepository>();
 builder.Services.AddSingleton<AssetManagement.Api.Services.ISessionRepository, AssetManagement.Api.Services.InMemorySessionRepository>();
+builder.Services.AddSingleton<AssetManagement.Api.Services.ICategoryRepository, AssetManagement.Api.Services.InMemoryCategoryRepository>();
+builder.Services.AddSingleton<AssetManagement.Api.Services.IAuditLogRepository, AssetManagement.Api.Services.InMemoryAuditLogRepository>();
 
 builder.Services.AddCors(options =>
 {

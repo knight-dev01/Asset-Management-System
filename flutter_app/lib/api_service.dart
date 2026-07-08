@@ -43,7 +43,8 @@ class ApiService {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'sessionToken': sessionToken}),
     );
-    if (response.statusCode != 204) {
+    // Accept 204 (success) or 404 (already expired/invalid) as successful logout
+    if (response.statusCode != 204 && response.statusCode != 404) {
       throw ApiException._fromResponse(response);
     }
   }
@@ -107,6 +108,41 @@ class ApiService {
     if (response.statusCode != 204) {
       throw ApiException._fromResponse(response);
     }
+  }
+
+  // Categories endpoints
+  static Future<List<AssetCategory>> fetchCategories() async {
+    final uri = Uri.parse('$_baseUrl/categories');
+    final response = await http.get(uri);
+    if (response.statusCode != 200) {
+      throw ApiException._fromResponse(response);
+    }
+    final body = jsonDecode(response.body) as List<dynamic>;
+    return body.map((item) => AssetCategory.fromJson(item as Map<String, dynamic>)).toList();
+  }
+
+  static Future<AssetCategory> createCategory(String name, String description, String icon) async {
+    final uri = Uri.parse('$_baseUrl/categories');
+    final response = await http.post(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'name': name, 'description': description, 'icon': icon}),
+    );
+    if (response.statusCode != 201) {
+      throw ApiException._fromResponse(response);
+    }
+    return AssetCategory.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  // Audit logs endpoints
+  static Future<List<AuditLog>> fetchAuditLogs(String userId) async {
+    final uri = Uri.parse('$_baseUrl/auditlogs/user/$userId');
+    final response = await http.get(uri);
+    if (response.statusCode != 200) {
+      throw ApiException._fromResponse(response);
+    }
+    final body = jsonDecode(response.body) as List<dynamic>;
+    return body.map((item) => AuditLog.fromJson(item as Map<String, dynamic>)).toList();
   }
 }
 
